@@ -1,4 +1,4 @@
-var hlAnimate = (function ($) {
+App.Modules.HLAnimate = (function ($) {
     //set animation timing
     var animationDelay = 2500,
     //loading bar effect
@@ -13,44 +13,25 @@ var hlAnimate = (function ($) {
     //clip effect
         revealDuration = 600,
         revealAnimationDelay = 1500;
+    //default selector
+    var defaultSelector = '.cd-headline';
 
-    var instance = {}
-        , customSelectorList = ['.cd-headline']; //default;
-
-
-    instance.registerCustomSelector = function (selector, isAttr) {
-        if (isAttr) {
-            selector = '[' + selector + ']';
-        }
-
-        if (typeof  selector !== 'string' || customSelectorList.indexOf(selector) >= 0) {
-            return;
-        }
-        customSelectorList.push(selector);
-    };
-
-    instance.removeTags = function (selector) {
-        var index = customSelectorList.indexOf(selector);
-        if (typeof selector !== 'string' || index < 0) {
-            return;
-        }
-        customSelectorList.splice(index, 1);
-    };
-
-    function prepareContent(selector) {
-
+    //default option
+    var options = {
+        animationDelay: animationDelay,
+        barAnimationDelay: barAnimationDelay,
+        barWaiting: barWaiting,
+        lettersDelay: lettersDelay,
+        typeLettersDelay: typeLettersDelay,
+        selectionDuration: selectionDuration,
+        typeAnimationDelay: typeAnimationDelay,
+        revealDuration: revealDuration,
+        revealAnimationDelay: revealAnimationDelay,
+        selector: defaultSelector
     }
 
-    initHeadline();
-
-
-    function initHeadline() {
-        //insert <i> element for each letter of a changing word
-        singleLetters($('.cd-headline.letters').find('b'));
-        //initialise headline animation
-
-        animateHeadline($(customSelectorList.join(', ')));
-
+    var classMappingTable = {
+        'slide': {}
     }
 
     function singleLetters($words) {
@@ -68,6 +49,7 @@ var hlAnimate = (function ($) {
     }
 
     function animateHeadline($headlines) {
+        console.log(animationDelay);
         var duration = animationDelay;
         $headlines.each(function () {
             var headline = $(this);
@@ -210,5 +192,91 @@ var hlAnimate = (function ($) {
         $newWord.removeClass('is-hidden').addClass('is-visible');
     }
 
+
+    // Register constructor
+    var instance = function (sel, opt) {
+        if (options) {
+            $.extend(options, opt)
+        }
+        options.selector = (sel) ? sel : options.selector;
+
+    }
+
+    // Register prototype
+    instance.prototype.initHeadline = function () {
+        //initialise headline animation
+        $(options.selector).closest('h1').addClass(defaultSelector.substr(1));
+
+        //insert <i> element for each letter of a changing word
+        singleLetters($('.cd-headline.letters').find('b'));
+        animateHeadline($(defaultSelector));
+
+    }
+
+    // TODO: Generate to library syntax
+    function prepareContent(selector) {
+
+    }
+
+
     return instance;
 })(jQuery);
+
+
+//this is for the demo only
+var intro = $('.cd-intro');
+$('.cd-filter input').on('change', function(event){
+    var selected = $(event.target).attr('id')
+    switch(selected) {
+        case 'rotate-1':
+            intro.load('content.html .rotate-1', function(){
+                initHeadline();
+            });
+            break;
+        case 'type':
+            intro.load('content.html .type', function(){
+                initHeadline();
+            });
+            break;
+        case 'rotate-2':
+            intro.load('content.html .rotate-2', function(){
+                initHeadline();
+            });
+            break;
+        case 'loading-bar':
+            intro.load('content.html .loading-bar', function(){
+                initHeadline();
+            });
+            break;
+        case 'slide':
+            intro.load('content.html .slide', function(){
+                initHeadline();
+            });
+            break;
+        case 'clip':
+            intro.load('content.html .clip', function(){
+                initHeadline();
+            });
+            break;
+        case 'zoom':
+            intro.load('content.html .zoom', function(){
+                initHeadline();
+            });
+            break;
+        case 'rotate-3':
+            intro.load('content.html .rotate-3', function(){
+                initHeadline();
+            });
+            break;
+        case 'scale':
+            intro.load('content.html .scale', function(){
+                initHeadline();
+            });
+            break;
+        case 'push':
+            intro.load('content.html .push', function(){
+                initHeadline();
+            });
+            break;
+    }
+});
