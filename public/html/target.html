@@ -71,15 +71,24 @@
         <label for="push">Push</label>
     </li>
 </ul>
+<div class="data-transform-effect">
 
-<section class="cd-intro"><h1 class="cd-headline zoom">
-    <span>My favourite food is</span>
+</div>
+<section class="cd-intro">
+    <h1 class="cd-headline zoom">
+        <span>My favourite food is</span>
 	<span class="cd-words-wrapper" style="width: 130px;">
 		<b class="is-hidden">pizza</b>
 		<b class="is-hidden">sushi</b>
 		<b class="is-visible">steak</b>
 	</span>
-</h1></section>
+    </h1>
+</section>
+
+<div class="data-container">
+    <div class="effect-template"></div>
+    <input class="display-words-input" type="hidden"/>
+</div>
 
 
 <!-- Footer Page : import JS files -->
@@ -104,7 +113,9 @@
 
 
 <script>
-    App.Pages.Target.load();
+    jQuery(document).ready(function () {
+        App.Pages.Target.load();
+    });
 </script>
 <!-- Resource jQuery -->
 </body>

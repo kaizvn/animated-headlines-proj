@@ -84,3 +84,7 @@ ul.word-lists-ul li.word-item .remove-btn {
     top: 20%;
     cursor: pointer;
 }
+
+.data-container {
+    display: none;
+}

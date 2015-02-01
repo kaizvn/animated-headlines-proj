@@ -7,6 +7,7 @@ App.Pages.Animation = (function ($, Event, pageSelector) {
     var instance = {};
     var $cache = {};
     var MAX_ITEM = 10;
+    var trigger = 'data-animationtag';
 
     instance.load = function () {
         Event.registerFunction(init);
@@ -25,7 +26,6 @@ App.Pages.Animation = (function ($, Event, pageSelector) {
         };
 
         $cache.ulLists = $(pageSelector.wordsLists);
-        $cache.iframe = $(pageSelector.iframeWrapper).contents();
         $cache.liTemplate =
             $('<li/>', {class: liClass.wrapper})
                 .append($('<span/>', {class: liClass.textAdded}))
@@ -37,23 +37,51 @@ App.Pages.Animation = (function ($, Event, pageSelector) {
     function eventHandler() {
         $(pageSelector.inputForm).on('submit', function (e) {
             e.preventDefault();
-            if ($cache.ulLists.find(pageSelector.wordWrapper).length >= MAX_ITEM) {
-                alert('holysheet');
-                return;
+
+            var $input = $(pageSelector.textInput, this)
+                , inputHTML = $cache.liTemplate.clone()
+                , $iframe = $(pageSelector.iframeWrapper).contents()
+                , id = Date.now();
+
+            if ($input.val().length === 0) {
+                return false;
             }
-            var input = $(pageSelector.textInput, this)
-                , inputHTML = $cache.liTemplate.clone();
 
-            inputHTML.find(pageSelector.textAdded).text(input.val());
+            if ($cache.ulLists.find(pageSelector.wordWrapper).length >= MAX_ITEM) {
+                alert('holy sheet');
+                return false;
+            }
+
+            // Add to list words
+            inputHTML
+                .attr('id', id)
+                .find(pageSelector.textAdded).text($input.val());
             $cache.ulLists.append(inputHTML);
-            input.val('');
-            console.log('added');
 
+            //Add to iframe
+            var section = $('<section/>', {
+                class: pageSelector.Target.intro.substr(1),
+                text: $input.val(),
+                id: id
+
+            });
+            section.attr(trigger, $input.val());
+            $(pageSelector.Target.transformContainer, $iframe).append(section);
+
+            // Clear input
+            $input.val('');
+            console.log('added');
         });
 
+
         $(pageSelector.wordsLists).on('click', pageSelector.removeBtn, function () {
-            var $item = $(this).closest(pageSelector.wordWrapper);
+            var $iframe = $(pageSelector.iframeWrapper).contents()
+                , $item = $(this).closest(pageSelector.wordWrapper)
+                , idSelector = '#' + $item.attr('id')
+                , $iframeItem = $(pageSelector.Target.transformContainer + ' ' + idSelector, $iframe);
+
             $item.remove();
+            $iframeItem.remove();
             console.log('removed');
         });
     }
