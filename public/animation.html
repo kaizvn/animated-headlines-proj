@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="/css/reset.css">
     <!-- CSS reset -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/style.mine.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.mine.css">
     <!-- Resource style -->
-    <script src="js/modernizr.js"></script>
+    <script src="/js/library/modernizr.js"></script>
     <!-- Modernizr -->
 
     <title>Animated Headlines | CodyHouse</title>
+
 </head>
 <body>
 <div class="container">
@@ -21,8 +22,10 @@
         </h1>
 
         <div class="words-panel">
-            <input class="input-text" type="text"/>
-            <button class="add-text-btn"><i class="add-symbol">+</i> <span>Add</span></button>
+            <form class="input-form">
+                <input class="input-text" type="text"/>
+                <button type="submit" class="add-text-btn"><i class="add-symbol">+</i> <span>Add</span></button>
+            </form>
             <ul class="word-lists-ul">
                 <div class="title-list">List of words (max 10)</div>
                 <li class="word-item">
@@ -50,11 +53,26 @@
     </div>
 </div>
 
-<script src="js/jquery-2.1.1.js"></script>
-<script src="js/App.js"></script>
-<script src="js/App.Modules.HLAnimate.js"></script>
-<script src="js/App.Selectors.js"></script>
-<script src="js/App.Pages.Animation.js"></script>
+<!-- Footer Page : import JS files -->
+
+<!-- Library import -->
+<script src="/js/library/jquery-2.1.1.js"></script>
+<!-- Library import END -->
+
+<!-- app & Selector import -->
+<script src="/js/app/App.js"></script>
+<script src="/js/app/App.Selectors.js"></script>
+<!-- app import END -->
+
+<!-- Modules import -->
+<script src="/js/app/App.Modules.HLAnimate.js"></script>
+<!-- Modules import END -->
+
+<!-- Pages import -->
+<script src="/js/app/App.Pages.Animation.js"></script>
+<script src="/js/app/App.Pages.Target.js"></script>
+<!-- PAges import END-->
+
 
 <script>
     jQuery(document).ready(function () {
@@ -64,7 +82,7 @@
          */
 
         var option = {};
-        App.Pages.Animation.load('[data-animationtag]', option);
+        App.Pages.Animation.load();
 
     });
 </script>

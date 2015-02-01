@@ -1,0 +1,22 @@
+{
+    "name": "animated-headlines-proj",
+    "version": "1.0.0",
+    "description": "just a test project",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://kaizvn:kaizvnn1@github.com/kaizvn/animated-headlines-proj.git"
+    },
+    "dependencies": {
+        "connect": "latest"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/kaizvn/animated-headlines-proj/issues"
+    },
+    "homepage": "https://github.com/kaizvn/animated-headlines-proj"
+}
