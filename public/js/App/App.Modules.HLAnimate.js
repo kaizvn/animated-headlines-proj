@@ -49,7 +49,7 @@ App.Modules.HLAnimate = (function ($) {
     }
 
     function animateHeadline($headlines) {
-        console.log(animationDelay);
+        console.log($headlines.length);
         var duration = animationDelay;
         $headlines.each(function () {
             var headline = $(this);
@@ -200,7 +200,7 @@ App.Modules.HLAnimate = (function ($) {
         }
         options.selector = (sel) ? sel : options.selector;
 
-    }
+    };
 
     // Register prototype
     instance.prototype.initHeadline = function () {
@@ -211,7 +211,7 @@ App.Modules.HLAnimate = (function ($) {
         singleLetters($('.cd-headline.letters').find('b'));
         animateHeadline($(defaultSelector));
 
-    }
+    };
 
     // TODO: Generate to library syntax
     function prepareContent(selector) {

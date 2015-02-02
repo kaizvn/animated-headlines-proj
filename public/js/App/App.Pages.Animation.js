@@ -3,14 +3,18 @@
  */
 
 
-App.Pages.Animation = (function ($, Event, pageSelector) {
+App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
     var instance = {};
     var $cache = {};
     var MAX_ITEM = 10;
-    var trigger = 'data-animationtag';
+    var trigger = {
+        selector: pageSelector.trigger,
+        name: pageSelector.trigger.replace(/[\.#\[\]]/g, ''), // remove .# [ ]
+        type: 'a' //a = attribute, c = class , i = id
+    };
 
-    instance.load = function () {
-        Event.registerFunction(init);
+    instance.load = function (selector, option) {
+        Event.registerFunction(init, [selector, option]);
         Event.registerFunction(eventHandler);
 
         Event.invokeFunction();
@@ -26,6 +30,8 @@ App.Pages.Animation = (function ($, Event, pageSelector) {
         };
 
         $cache.ulLists = $(pageSelector.wordsLists);
+        $cache.iframe = $(pageSelector.iframeWrapper);
+        //$cache.iframe.contentWindow
         $cache.liTemplate =
             $('<li/>', {class: liClass.wrapper})
                 .append($('<span/>', {class: liClass.textAdded}))
@@ -34,48 +40,69 @@ App.Pages.Animation = (function ($, Event, pageSelector) {
 
     }
 
+    function addWords() {
+        var $input = $(pageSelector.textInput, this)
+            , inputHTML = $cache.liTemplate.clone()
+            , $iframe = $cache.iframe.contents()
+            , iframeWindow = $(pageSelector.iframeWrapper)[0].contentWindow
+            , $transformContainer = $(pageSelector.Target.transformContainer, $iframe)
+            , id = Date.now();
+
+        if ($input.val().length === 0) {
+            return false;
+        }
+
+        if ($cache.ulLists.find(pageSelector.wordWrapper).length >= MAX_ITEM) {
+            alert('holy sheet');
+            return false;
+        }
+
+        // Add to list words
+        inputHTML
+            .attr('id', id)
+            .find(pageSelector.textAdded).text($input.val());
+        $cache.ulLists.append(inputHTML);
+
+        //Add to iframe
+        var section = $('<section/>', {
+            class: pageSelector.Target.intro.substr(1),
+            'data-words': $input.val(),
+            id: id
+
+        });
+        switch (trigger.type) {
+            case 'a':
+                section.attr(trigger.name, '');
+                break;
+            case 'c':
+                section.addClass(trigger.name);
+                break;
+            case 'i':
+                section.attr('id', trigger.name);
+                break;
+            default :
+                break;
+        }
+
+        $transformContainer.append(section);
+
+        //trigger effect
+        iframeWindow.App.Pages.Target.init(trigger.selector, {});
+
+
+        // Clear input
+        $input.val('');
+    }
+
     function eventHandler() {
         $(pageSelector.inputForm).on('submit', function (e) {
             e.preventDefault();
-
-            var $input = $(pageSelector.textInput, this)
-                , inputHTML = $cache.liTemplate.clone()
-                , $iframe = $(pageSelector.iframeWrapper).contents()
-                , id = Date.now();
-
-            if ($input.val().length === 0) {
-                return false;
-            }
-
-            if ($cache.ulLists.find(pageSelector.wordWrapper).length >= MAX_ITEM) {
-                alert('holy sheet');
-                return false;
-            }
-
-            // Add to list words
-            inputHTML
-                .attr('id', id)
-                .find(pageSelector.textAdded).text($input.val());
-            $cache.ulLists.append(inputHTML);
-
-            //Add to iframe
-            var section = $('<section/>', {
-                class: pageSelector.Target.intro.substr(1),
-                text: $input.val(),
-                id: id
-
-            });
-            section.attr(trigger, $input.val());
-            $(pageSelector.Target.transformContainer, $iframe).append(section);
-
-            // Clear input
-            $input.val('');
-            console.log('added');
+            addWords.apply(this);
         });
 
 
         $(pageSelector.wordsLists).on('click', pageSelector.removeBtn, function () {
-            var $iframe = $(pageSelector.iframeWrapper).contents()
+            var $iframe = $cache.iframe.contents()
                 , $item = $(this).closest(pageSelector.wordWrapper)
                 , idSelector = '#' + $item.attr('id')
                 , $iframeItem = $(pageSelector.Target.transformContainer + ' ' + idSelector, $iframe);
@@ -88,5 +115,5 @@ App.Pages.Animation = (function ($, Event, pageSelector) {
 
     return instance;
 
-})(jQuery, App.Event, App.Selectors.Animation);
+})(jQuery, App.Event, App.Selectors.Animation, App.Modules.HLAnimate);
 

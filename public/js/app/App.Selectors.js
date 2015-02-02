@@ -5,6 +5,7 @@
 App.Selectors = {
 
     Animation: {
+        trigger: '[data-animationtag]',
         container: '.container',
         wordsPanel: '.words-panel',
         wordsLists: 'ul.word-lists-ul',
@@ -30,11 +31,13 @@ App.Selectors = {
                 scale: '.scale',
                 push: '.push'
             },
-
+            cdWordWrappers: '.cd-words-wrapper',
             intro: '.cd-intro',
             effectTemplate: '.effect-template',
             transformContainer: '.data-transform-effect',
-            selectStyles: '.cd-filter input'
+            styleRadio: '.cd-filter input',
+            selectedStyle: '[name=cd-animation-type]:checked'
+
 
         }
     }

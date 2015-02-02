@@ -74,17 +74,18 @@
 <div class="data-transform-effect">
 
 </div>
+<!---
 <section class="cd-intro">
-    <h1 class="cd-headline zoom">
+    <h1 class=" zoom">
         <span>My favourite food is</span>
-	<span class="cd-words-wrapper" style="width: 130px;">
+	<span data-animationtag class="cd-words-wrapper" style="width: 130px;">
 		<b class="is-hidden">pizza</b>
 		<b class="is-hidden">sushi</b>
 		<b class="is-visible">steak</b>
 	</span>
     </h1>
 </section>
-
+-->
 <div class="data-container">
     <div class="effect-template"></div>
     <input class="display-words-input" type="hidden"/>
@@ -114,7 +115,9 @@
 
 <script>
     jQuery(document).ready(function () {
-        App.Pages.Target.load();
+        var options = {}
+                , selector = 'cd-headline';
+        App.Pages.Target.load(selector, options);
     });
 </script>
 <!-- Resource jQuery -->
