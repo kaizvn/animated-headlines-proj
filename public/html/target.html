@@ -71,25 +71,21 @@
         <label for="push">Push</label>
     </li>
 </ul>
-<div class="data-transform-effect">
 
-</div>
-<!---
+<div class="data-transform-effect"></div>
+
+<!--
 <section class="cd-intro">
-    <h1 class=" zoom">
+    <h1 class="cd-headline letters rotate-2">
         <span>My favourite food is</span>
-	<span data-animationtag class="cd-words-wrapper" style="width: 130px;">
-		<b class="is-hidden">pizza</b>
-		<b class="is-hidden">sushi</b>
-		<b class="is-visible">steak</b>
+	<span class="cd-words-wrapper">
+		<b class="is-visible">pizza</b>
+		<b>sushi</b>
+		<b>steak</b>
 	</span>
     </h1>
 </section>
 -->
-<div class="data-container">
-    <div class="effect-template"></div>
-    <input class="display-words-input" type="hidden"/>
-</div>
 
 
 <!-- Footer Page : import JS files -->
@@ -115,8 +111,12 @@
 
 <script>
     jQuery(document).ready(function () {
-        var options = {}
-                , selector = 'cd-headline';
+        var options = {
+                    animationDelay: 1000,
+                    barAnimationDelay: 2500,
+                    type: ''
+                }
+                , selector = '.cd-headline';
         App.Pages.Target.load(selector, options);
     });
 </script>

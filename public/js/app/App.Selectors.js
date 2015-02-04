@@ -17,6 +17,8 @@ App.Selectors = {
         removeSymbol: '.remove-symbol',
         inputForm: '.input-form',
         iframeWrapper: '.target-iframe',
+        saveBtn: '.save-btn',
+        viewBtn: '.view-btn',
 
         Target: {
             styles: {

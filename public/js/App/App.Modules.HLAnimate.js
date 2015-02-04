@@ -1,38 +1,32 @@
 App.Modules.HLAnimate = (function ($) {
-    //set animation timing
-    var animationDelay = 2500,
-    //loading bar effect
-        barAnimationDelay = 3800,
-        barWaiting = barAnimationDelay - 3000, //3000 is the duration of the transition on the loading bar - set in the scss/css file
-    //letters effect
-        lettersDelay = 50,
-    //type effect
-        typeLettersDelay = 150,
-        selectionDuration = 500,
-        typeAnimationDelay = selectionDuration + 800,
-    //clip effect
-        revealDuration = 600,
-        revealAnimationDelay = 1500;
+    var options = {};
     //default selector
-    var defaultSelector = '.cd-headline';
+    var DEFAULT_SELECTOR = '.cd-headline'
+        , DEFAULT_WRAPPER = '.cd-intro'
+        , TEMPLATE_URL = 'contents.html'
+        , WORDS_WRAPPER = '.cd-words-wrapper'
+        , IS_PROCESSING = false;
 
-    //default options
-    var options = {
-        animationDelay: animationDelay,
-        barAnimationDelay: barAnimationDelay,
-        barWaiting: barWaiting,
-        lettersDelay: lettersDelay,
-        typeLettersDelay: typeLettersDelay,
-        selectionDuration: selectionDuration,
-        typeAnimationDelay: typeAnimationDelay,
-        revealDuration: revealDuration,
-        revealAnimationDelay: revealAnimationDelay,
-        selector: defaultSelector
+    // Default options
+    function setDefaultOptions() {
+        //set animation timing
+        options.animationDelay = 2500,
+            //loading bar effect
+            options.barAnimationDelay = 3800,
+            options.barWaiting = options.barAnimationDelay - 3000, //3000 is the duration of the transition on the loading bar - set in the scss/css file
+            //letters effect
+            options.lettersDelay = 50,
+            //type effect
+            options.typeLettersDelay = 150,
+            options.selectionDuration = 500,
+            options.typeAnimationDelay = options.selectionDuration + 800,
+            //clip effect
+            options.revealDuration = 600,
+            options.revealAnimationDelay = 1500,
+            options.selector = DEFAULT_SELECTOR,
+            options.effectWrapper = DEFAULT_WRAPPER;
     }
 
-    var classMappingTable = {
-        'slide': {}
-    }
 
     function singleLetters($words) {
         $words.each(function () {
@@ -50,15 +44,15 @@ App.Modules.HLAnimate = (function ($) {
 
     function animateHeadline($headlines) {
         console.log($headlines.length);
-        var duration = animationDelay;
+        var duration = options.animationDelay;
         $headlines.each(function () {
             var headline = $(this);
 
             if (headline.hasClass('loading-bar')) {
-                duration = barAnimationDelay;
+                duration = options.barAnimationDelay;
                 setTimeout(function () {
                     headline.find('.cd-words-wrapper').addClass('is-loading')
-                }, barWaiting);
+                }, options.barWaiting);
             } else if (headline.hasClass('clip')) {
                 var spanWrapper = headline.find('.cd-words-wrapper'),
                     newWidth = spanWrapper.width() + 10
@@ -73,7 +67,6 @@ App.Modules.HLAnimate = (function ($) {
                 });
                 headline.find('.cd-words-wrapper').css('width', width);
             }
-            ;
 
             //trigger animation
             setTimeout(function () {
@@ -91,18 +84,18 @@ App.Modules.HLAnimate = (function ($) {
             setTimeout(function () {
                 parentSpan.removeClass('selected');
                 $word.removeClass('is-visible').addClass('is-hidden').children('i').removeClass('in').addClass('out');
-            }, selectionDuration);
+            }, options.selectionDuration);
             setTimeout(function () {
-                showWord(nextWord, typeLettersDelay)
-            }, typeAnimationDelay);
+                showWord(nextWord, options.typeLettersDelay)
+            }, options.typeAnimationDelay);
 
         } else if ($word.parents('.cd-headline').hasClass('letters')) {
             var bool = ($word.children('i').length >= nextWord.children('i').length) ? true : false;
-            hideLetter($word.find('i').eq(0), $word, bool, lettersDelay);
-            showLetter(nextWord.find('i').eq(0), nextWord, bool, lettersDelay);
+            hideLetter($word.find('i').eq(0), $word, bool, options.lettersDelay);
+            showLetter(nextWord.find('i').eq(0), nextWord, bool, options.lettersDelay);
 
         } else if ($word.parents('.cd-headline').hasClass('clip')) {
-            $word.parents('.cd-words-wrapper').animate({width: '2px'}, revealDuration, function () {
+            $word.parents('.cd-words-wrapper').animate({width: '2px'}, options.revealDuration, function () {
                 switchWord($word, nextWord);
                 showWord(nextWord);
             });
@@ -112,16 +105,16 @@ App.Modules.HLAnimate = (function ($) {
             switchWord($word, nextWord);
             setTimeout(function () {
                 hideWord(nextWord)
-            }, barAnimationDelay);
+            }, options.barAnimationDelay);
             setTimeout(function () {
                 $word.parents('.cd-words-wrapper').addClass('is-loading')
-            }, barWaiting);
+            }, options.barWaiting);
 
         } else {
             switchWord($word, nextWord);
             setTimeout(function () {
                 hideWord(nextWord)
-            }, animationDelay);
+            }, options.animationDelay);
         }
     }
 
@@ -131,10 +124,10 @@ App.Modules.HLAnimate = (function ($) {
             $word.addClass('is-visible').removeClass('is-hidden');
 
         } else if ($word.parents('.cd-headline').hasClass('clip')) {
-            $word.parents('.cd-words-wrapper').animate({'width': $word.width() + 10}, revealDuration, function () {
+            $word.parents('.cd-words-wrapper').animate({'width': $word.width() + 10}, options.revealDuration, function () {
                 setTimeout(function () {
                     hideWord($word)
-                }, revealAnimationDelay);
+                }, options.revealAnimationDelay);
             });
         }
     }
@@ -149,7 +142,7 @@ App.Modules.HLAnimate = (function ($) {
         } else if ($bool) {
             setTimeout(function () {
                 hideWord(takeNext($word))
-            }, animationDelay);
+            }, options.animationDelay);
         }
 
         if ($letter.is(':last-child') && $('html').hasClass('no-csstransitions')) {
@@ -174,7 +167,7 @@ App.Modules.HLAnimate = (function ($) {
             if (!$bool) {
                 setTimeout(function () {
                     hideWord($word)
-                }, animationDelay)
+                }, options.animationDelay)
             }
         }
     }
@@ -192,10 +185,47 @@ App.Modules.HLAnimate = (function ($) {
         $newWord.removeClass('is-hidden').addClass('is-visible');
     }
 
+    // Create Template
+    function createTemplate($introSection) {
+
+        var $this = $(this);
+        $.each($introSection, function (key, section) {
+            var $section = $(section)
+                , words = $section.attr('cd-words');
+
+            if (!words) {
+                return;
+            } else {
+                words = words.split(' ');
+            }
+            $section.html($this.html());
+            var $cdWordWrapper = $section.find(WORDS_WRAPPER);
+            words.forEach(function (word) {
+                $cdWordWrapper.append('<b>' + word + '</b>');
+            });
+            $cdWordWrapper.find('b').first().addClass('is-visible');
+
+        });
+        $this.remove();
+        //  callback();
+        //});
+    }
+
+    function clearExistTimeout() {
+        var id = window.setTimeout(function () {
+        }, 0);
+
+        while (id--) {
+            window.clearTimeout(id);
+        }
+    }
 
     // Register constructor
     var instance = function (sel, opt) {
-        if (options) {
+        // Reset options when create new instance;
+        setDefaultOptions();
+
+        if (opt) {
             $.extend(options, opt)
         }
         options.selector = (sel) ? sel : options.selector;
@@ -203,21 +233,29 @@ App.Modules.HLAnimate = (function ($) {
     };
 
     // Register prototype
-    instance.prototype.initHeadline = function () {
-        //initialise headline animation
-        $(options.selector).closest('h1').addClass(defaultSelector.substr(1));
+    instance.prototype.initHeadline = function (effect) {
+        var $effectTemplate = $('<div/>')
+            , $introSection = $(options.effectWrapper);
+        // Clear exist timeout
+        clearExistTimeout();
+        if ($introSection.length === 0) {
+            return;
+        }
 
-        //insert <i> element for each letter of a changing word
-        singleLetters($('.cd-headline.letters').find('b'));
-        animateHeadline($(defaultSelector));
+        $effectTemplate.load(TEMPLATE_URL + ' .' + effect, function () {
+            createTemplate.call(this, $introSection);
+
+            //insert <i> element for each letter of a changing word
+            singleLetters($('.cd-headline.letters').find('b'));
+            //initialise headline animation
+            animateHeadline($(options.selector));
+            console.log('option', options);
+        });
+
+
+        console.log('effect', effect);
 
     };
-
-    // TODO: Generate to library syntax
-    function prepareContent(selector) {
-
-    }
-
 
     return instance;
 })(jQuery);
