@@ -1,7 +1,11 @@
 # animated-headlines-proj
 just a test project
 
-DESCRIPTION
+INFO
+- Type : test project.
+- Design pattern : Javascript Module design pattern.
+- Library : jQuery, animated-headlines.
+- Cost : 30 - 35 hours coding.
 - This project uses a static Node.JS server just for displaying results easier.
 
 HOW TO USE
@@ -9,5 +13,6 @@ HOW TO USE
 - Run command : node server // To see the result page.
 - Enjoy it.
 
-THANKS
+THANKS!
+
 Hung Nguyen ( Kai Nguyen )
