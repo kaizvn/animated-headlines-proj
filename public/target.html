@@ -22,7 +22,7 @@
 
 <ul class="cd-filter">
     <li>
-        <input type="radio" id="rotate-1" name="cd-animation-type" checked="">
+        <input type="radio" id="rotate-1" name="cd-animation-type">
         <label for="rotate-1">Rotate 1</label>
     </li>
 
@@ -110,15 +110,18 @@
 
 
 <script>
-    jQuery(document).ready(function () {
-        var options = {
-                    animationDelay: 1000,
-                    barAnimationDelay: 2500,
-                    type: ''
-                }
-                , selector = '.cd-headline';
-        App.Pages.Target.load(selector, options);
-    });
+    (function ($) {
+        $(document).ready(function () {
+            var selector = '.cd-headline'
+                    , options = {
+                        animationDelay: 1000,
+                        barAnimationDelay: 2500,
+                        type: 'rotate-3'
+                    };
+
+            App.Pages.Target.load(selector, options);
+        });
+    })(jQuery)
 </script>
 <!-- Resource jQuery -->
 </body>

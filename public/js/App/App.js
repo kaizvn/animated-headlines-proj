@@ -3,26 +3,32 @@
  */
 
 var App = (function () {
-
     var Event = (function () {
-        var funcList = []
+        var funcList = {};
 
-        function registerFunction(func, params) {
+        function registerFunction(components, func, params) {
             if (typeof func !== 'function') {
                 return;
             }
             if (params && params.length === 'undefined') {
                 params = [];
             }
-            funcList.push({
+            if (!funcList[components]) {
+                funcList[components] = [];
+            }
+            funcList[components].push({
                 func: func,
                 params: params
             })
         }
 
-        function invokeFunction() {
-            while (funcList.length) {
-                var funcObj = funcList.pop()
+        function invokeFunction(components) {
+            if (!funcList[components]) {
+                return;
+            }
+
+            while (funcList[components].length) {
+                var funcObj = funcList[components].shift()
                     , func = funcObj.func
                     , params = funcObj.params;
                 func.apply(this, params);

@@ -1,31 +1,35 @@
+/**
+ * This is the core library
+ */
+
 App.Modules.HLAnimate = (function ($) {
     var options = {};
     //default selector
     var DEFAULT_SELECTOR = '.cd-headline'
         , DEFAULT_WRAPPER = '.cd-intro'
-        , TEMPLATE_URL = 'contents.html'
+        , DEFAULT_TYPE = 'rotate-1'
+        , TEMPLATE_URL = '/html/contents.html'
         , WORDS_WRAPPER = '.cd-words-wrapper'
-        , IS_PROCESSING = false;
+        , TYPE_LIST = ['rotate-1', 'type', 'rotate-2', 'loading-bar', 'slide',
+            'clip', 'zoom', 'rotate-3', 'scale', 'push'];
 
     // Default options
-    function setDefaultOptions() {
-        //set animation timing
-        options.animationDelay = 2500,
-            //loading bar effect
-            options.barAnimationDelay = 3800,
-            options.barWaiting = options.barAnimationDelay - 3000, //3000 is the duration of the transition on the loading bar - set in the scss/css file
-            //letters effect
-            options.lettersDelay = 50,
-            //type effect
-            options.typeLettersDelay = 150,
-            options.selectionDuration = 500,
-            options.typeAnimationDelay = options.selectionDuration + 800,
-            //clip effect
-            options.revealDuration = 600,
-            options.revealAnimationDelay = 1500,
-            options.selector = DEFAULT_SELECTOR,
-            options.effectWrapper = DEFAULT_WRAPPER;
-    }
+    //set animation timing
+    options.animationDelay = 2500,
+        //loading bar effect
+        options.barAnimationDelay = 3800,
+        options.barWaiting = options.barAnimationDelay - 3000, //3000 is the duration of the transition on the loading bar - set in the scss/css file
+        //letters effect
+        options.lettersDelay = 50,
+        //type effect
+        options.typeLettersDelay = 150,
+        options.selectionDuration = 500,
+        options.typeAnimationDelay = options.selectionDuration + 800,
+        //clip effect
+        options.revealDuration = 600,
+        options.revealAnimationDelay = 1500,
+        options.selector = DEFAULT_SELECTOR,
+        options.effectWrapper = DEFAULT_WRAPPER;
 
 
     function singleLetters($words) {
@@ -43,7 +47,6 @@ App.Modules.HLAnimate = (function ($) {
     }
 
     function animateHeadline($headlines) {
-        console.log($headlines.length);
         var duration = options.animationDelay;
         $headlines.each(function () {
             var headline = $(this);
@@ -187,7 +190,6 @@ App.Modules.HLAnimate = (function ($) {
 
     // Create Template
     function createTemplate($introSection) {
-
         var $this = $(this);
         $.each($introSection, function (key, section) {
             var $section = $(section)
@@ -196,7 +198,8 @@ App.Modules.HLAnimate = (function ($) {
             if (!words) {
                 return;
             } else {
-                words = words.split(' ');
+
+                words = words.trim().replace(/\s+/g, ' ').split(' ');
             }
             $section.html($this.html());
             var $cdWordWrapper = $section.find(WORDS_WRAPPER);
@@ -207,10 +210,9 @@ App.Modules.HLAnimate = (function ($) {
 
         });
         $this.remove();
-        //  callback();
-        //});
     }
 
+    // use to clear all timeout of previous effect
     function clearExistTimeout() {
         var id = window.setTimeout(function () {
         }, 0);
@@ -222,38 +224,34 @@ App.Modules.HLAnimate = (function ($) {
 
     // Register constructor
     var instance = function (sel, opt) {
-        // Reset options when create new instance;
-        setDefaultOptions();
-
         if (opt) {
             $.extend(options, opt)
         }
+        //if($('.cd-filter'))
         options.selector = (sel) ? sel : options.selector;
 
     };
 
     // Register prototype
-    instance.prototype.initHeadline = function (effect) {
+    instance.prototype.initHeadline = function (type) {
+        type = (type || TYPE_LIST.indexOf(type) >= 0) ? type : DEFAULT_TYPE;
+        clearExistTimeout();
         var $effectTemplate = $('<div/>')
             , $introSection = $(options.effectWrapper);
+
         // Clear exist timeout
-        clearExistTimeout();
         if ($introSection.length === 0) {
             return;
         }
 
-        $effectTemplate.load(TEMPLATE_URL + ' .' + effect, function () {
+        $effectTemplate.load(TEMPLATE_URL + ' .' + type, function () {
             createTemplate.call(this, $introSection);
 
             //insert <i> element for each letter of a changing word
             singleLetters($('.cd-headline.letters').find('b'));
             //initialise headline animation
             animateHeadline($(options.selector));
-            console.log('option', options);
         });
-
-
-        console.log('effect', effect);
 
     };
 

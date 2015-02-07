@@ -1,22 +1,26 @@
 {
-    "name": "animated-headlines-proj",
-    "version": "1.0.0",
-    "description": "just a test project",
-    "main": "app.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://kaizvn:kaizvnn1@github.com/kaizvn/animated-headlines-proj.git"
-    },
-    "dependencies": {
-        "connect": "latest"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/kaizvn/animated-headlines-proj/issues"
-    },
-    "homepage": "https://github.com/kaizvn/animated-headlines-proj"
+  "name": "animated-headlines-proj",
+  "version": "1.0.0",
+  "description": "test proj",
+  "main": "server.js",
+  "dependencies": {
+    "connect": "^3.3.4",
+    "open": "^0.0.5",
+    "serve-static": "^1.8.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://kaizvn:kaizvnn1@github.com/kaizvn/animated-headlines-proj.git"
+  },
+  "author": "Hung NGuyen ( Kai Nguyen)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kaizvn/animated-headlines-proj/issues"
+  },
+  "homepage": "https://github.com/kaizvn/animated-headlines-proj"
 }

@@ -3,10 +3,18 @@
  */
 
 
-App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
-    var instance = {};
-    var $cache = {};
-    var MAX_ITEM = 10;
+App.Pages.Animation = (function ($, Event, pageSelector) {
+    // instance : constructor, $cache : cached selector
+    var instance = {}
+        , $cache = {};
+
+    // Static value
+    var MAX_ITEM = 10
+        , IFRAME_LINK = '/target.html'
+        , PAGE_NAME = "ANIMATION"
+        , IFRAME_NAME = "IFRAME";
+
+    // Selector info Object
     var trigger = {
         selector: pageSelector.trigger,
         name: pageSelector.trigger.replace(/[\.#\[\]]/g, ''), // remove .# [ ]
@@ -14,10 +22,20 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
     };
 
     instance.load = function (selector, option) {
-        Event.registerFunction(init, [selector, option]);
-        Event.registerFunction(eventHandler);
+        instance.registerFunction(init, [selector, option]);
+        instance.registerFunction(initIframe);
+        instance.registerFunction(eventHandler);
+        instance.registerFunction(loadSaveData);
 
-        Event.invokeFunction();
+        Event.invokeFunction(PAGE_NAME);
+    };
+
+    instance.registerFunction = function (func, params) {
+        Event.registerFunction(PAGE_NAME, func, params);
+    };
+
+    instance.registerIframeFunction = function (func, params) {
+        Event.registerFunction(IFRAME_NAME, func, params);
     };
 
     function init() {
@@ -29,16 +47,38 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
 
         };
 
-        $cache.ulLists = $(pageSelector.wordsLists);
-        $cache.iframe = $(pageSelector.iframeWrapper);
-        $cache.textInput = $(pageSelector.textInput);
-        //$cache.iframe.contentWindow
         $cache.liTemplate =
             $('<li/>', {class: liClass.wrapper})
                 .append($('<span/>', {class: liClass.textAdded}))
                 .append($('<span/>', {class: liClass.removeBtn})
                     .append($('<i/>', {class: liClass.removeSymbol, text: 'X'})));
 
+
+        $cache.ulLists = $(pageSelector.wordsLists);
+        $cache.viewBtn = $(pageSelector.viewBtn);
+        $cache.saveBtn = $(pageSelector.saveBtn);
+        $cache.textInput = $(pageSelector.textInput);
+        $cache.inputForm = $(pageSelector.inputForm);
+        $cache.iframeSelector = $(pageSelector.iframeWrapper);
+    }
+
+    function initIframe() {
+        activeWhenIframeReady(function () {
+            $cache.iframe = $cache.iframeSelector.contents();
+            $cache.iframeWindow = $cache.iframeSelector[0].contentWindow;
+        });
+
+        $cache.iframeSelector.load(function () {
+            Event.invokeFunction(IFRAME_NAME);
+        });
+
+        $cache.iframeSelector.attr('src', IFRAME_LINK);
+
+    }
+
+    // Those function will be called when iframe ready.
+    function activeWhenIframeReady(func, params) {
+        instance.registerIframeFunction(func, params || []);
     }
 
     function addTextToList(input) {
@@ -55,7 +95,6 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
 
         if (texts.length === 'undefined') return;
 
-
         texts.forEach(function (text) {
             var inputHTML = $cache.liTemplate.clone()
                 , id = Date.now();
@@ -65,7 +104,7 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
             }
 
             if ($cache.ulLists.find(pageSelector.wordWrapper).length >= MAX_ITEM) {
-                alert('holy sheet');
+                alert('The max items can be added is 10');
                 return;
             }
 
@@ -80,13 +119,10 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
     }
 
 
-    function addWordsToIFrame() {
-        var $wordItem = $(pageSelector.wordsLists).find(pageSelector.wordWrapper)
-            , $iframe = $cache.iframe.contents()
-            , iframeWindow = $(pageSelector.iframeWrapper)[0].contentWindow
-            , $transformContainer = $(pageSelector.Target.transformContainer, $iframe)
+    function addWordsToIFrame(options) {
+        var $wordItem = $cache.ulLists.find(pageSelector.wordWrapper)
+            , $transformContainer = $(pageSelector.Target.transformContainer, $cache.iframe)
             , wordListContainer = $('<div/>');
-
 
         $.each($wordItem, function () {
             var $this = $(this);
@@ -98,7 +134,7 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
                     id: $(this).attr('id')
                 }
             );
-
+            // set attribute for select trigger
             switch (trigger.type) {
                 case 'a':
                     section.attr(trigger.name, '');
@@ -116,52 +152,79 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
         });
 
         $transformContainer.html(wordListContainer.html());
-        //$iframe.find(pageSelector.Target.intro.substr(1)).remove();
+
         //trigger effect
-        iframeWindow.App.Pages.Target.init(trigger.selector, {});
-
-
+        $cache.iframeWindow.App.Pages.Target.init(trigger.selector, options);
     }
 
-    function saveContents() {
-        var wordLists = [];
+    // View Result function
+    function viewResult() {
+        var $content = $('html', this);
+        var $selected = $content.find(pageSelector.Target.selectedStyle);
+        $content.find(pageSelector.Target.styleRadio).removeAttr('checked');
+        $selected.attr('checked', 'checked').prop('checked', true);
 
-        if (localStorage) {
-            $.each($(pageSelector.textAdded, pageSelector.wordsLists), function () {
-                var text = $(this).text();
-                wordLists.push(text);
-            });
+        var yourDOCTYPE = "<!DOCTYPE html>";
+        var printPreview = window.open('about:blank', 'print_preview', "resizable=yes,scrollbars=yes,status=yes");
+        var printDocument = printPreview.document;
+        printDocument.open();
+        printDocument.write(yourDOCTYPE + "<html>" + $content.html() + "</html>");
+        printDocument.close();
+    }
 
-            var stringify = JSON.stringify(wordLists);
-            localStorage.setItem('texts', stringify);
+    function loadSaveData() {
+        var textList = getSavedItems('texts')
+            , effectType = getSavedItems('activeType');
 
-        } else {
-            alert('Give up on your old browser, please!')
+        activeWhenIframeReady(function () {
+            // Set text to list
+            addTextToList(textList);
+            addWordsToIFrame({type: effectType});
+        });
+    }
+
+    function getSavedItems(name) {
+        if (!localStorage) {
+            return false;
         }
 
-    }
-
-    function loadContents(name) {
         var data = localStorage.getItem(name);
-        return JSON.parse(data);
+        data = (data !== 'undefined' && data !== 'null') ? JSON.parse(data) : '';
+        return data;
     }
 
-    function getCurrentEffect(name) {
-        return loadContents(name);
+    function setSavedItems(name, data) {
+        if (!localStorage) {
+            alert('Opps, sorry... this function just support newer browser, please use another one');
+            return false;
+        }
+
+        var stringify = JSON.stringify(data);
+        localStorage.setItem(name, stringify);
+        return true;
     }
 
-    function saveCurrentEffect() {
-        var $iframe = $cache.iframe.contents()
-            , type = $iframe.find(pageSelector.Target.selectedStyle).attr('id');
 
-        var stringify = JSON.stringify({type: type});
-        localStorage.setItem('activeType', stringify);
-
+    // Save function
+    function saveCurrentTextList() {
+        var wordLists = [];
+        $.each($(pageSelector.textAdded, $cache.ulLists), function () {
+            var text = $(this).text();
+            wordLists.push(text);
+        });
+        return setSavedItems('texts', wordLists);
 
     }
+
+    function saveCurrentEffectType() {
+        var type = $cache.iframe.find(pageSelector.Target.selectedStyle).attr('id');
+        return setSavedItems('activeType', type);
+    }
+
 
     function eventHandler() {
-        $(pageSelector.inputForm).on('submit', function (e) {
+        // Submit form handler
+        $cache.inputForm.on('submit', function (e) {
             e.preventDefault();
 
             // Add words list
@@ -174,32 +237,34 @@ App.Pages.Animation = (function ($, Event, pageSelector, headlineAnimated) {
             $cache.textInput.val('');
         });
 
-
-        $(pageSelector.wordsLists).on('click', pageSelector.removeBtn, function () {
+        // Remove button event handler
+        $cache.ulLists.on('click', pageSelector.removeBtn, function () {
             // Remove item on lists
             var $item = $(this).closest(pageSelector.wordWrapper);
             $item.remove();
 
             // Update iframe's list
             addWordsToIFrame.apply(this);
-
         });
 
-        $(pageSelector.saveBtn).on('click', function () {
-            saveContents();
-            saveCurrentEffect();
+        // Save button event handler
+        $cache.saveBtn.on('click', function () {
+            var isSaveText = saveCurrentTextList()// Save text
+                , isSaveEffectType = saveCurrentEffectType(); // Save effect type
 
+            // Alert confirm action
+            var message = (isSaveEffectType && isSaveText) ? 'Data saved!' : 'data save Failed'
+            alert(message);
         });
 
-        $(pageSelector.viewBtn).on('click', function () {
-
+        // View button event handler
+        $cache.viewBtn.on('click', function () {
+            var iframe = $cache.iframeSelector.contents();
+            viewResult.apply(iframe);
         });
-
-
     }
 
     return instance;
 
-})
-(jQuery, App.Event, App.Selectors.Animation, App.Modules.HLAnimate);
+})(jQuery, App.Event, App.Selectors.Animation);
 
