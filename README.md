@@ -1,5 +1,5 @@
 # animated-headlines-proj
-just a test project
+# Hung Nguyen
 
 INFO
 - Type : test project.
